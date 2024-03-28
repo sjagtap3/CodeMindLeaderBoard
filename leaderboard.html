@@ -549,28 +549,15 @@
       <h3>📝 Notes</h3>
       <p class="inline-block mt-3">
       <ol>
-        <li>Samples are generated from scratch and are post-processed by <a
-            href="https://github.com/evalplus/evalplus/tree/master/tools/sanitize.py">our sanitizer script</a>. We also
-          run syntax checkers to avoid trivial syntactical errors.</li>
-        <li>Models are ranked according to pass@1 using greedy decoding. Setup details can be found <a
-            href="https://github.com/evalplus/evalplus/blob/master/codegen/model.py">here</a>.</li>
-        <li>Models labelled with ✨ are evaluated using an instruction/chat setting, while others perform direct code
-          generation given the prompt.</li>
-        <li>Both MBPP and MBPP+ referred in our leaderboard use a subset (399 tasks) of hand-verified problems from
-          MBPP-sanitized (427 tasks), to make sure the programming task is well-formed and unambiguous.</li>
-        <li>It is the model providers' responsibility to avoid data contamination and clarify the training data, and we
-          cannot guarantee if evaluated models are contaminated.</li>
-        <li>💚 means open weights and open data. 💙 means open weights and open SFT data, but the base model is not
-          data-open. What does this imply? 💚💙 models open-source the data such that one can concretely reason about
-          contamination.</li>
-        <li>The "size" of Mixtral 8x7B models is regarded to be 13B, aka the actual required compute per inference.</li>
+        <li>For all the models we evaluated, we set temprature to 0.</li>
+        <li>More models and more tasks can be intergrated into our framework, more instructions can be found in  <a href=https://github.com/Intelligent-CAT-Lab/CodeMind>our git repo</a>.</li>
       </ol>
       </p>
 
     </div>
     <div id="notes">
       <h3>🤗 More Leaderboards</h3>
-      In addition to EvalPlus leaderboards, it is recommended to comprehensively understand LLM coding ability through a
+      In addition to CodeMind leaderboards, it is recommended to comprehensively understand LLM coding ability through a
       diverse set of benchmarks and leaderboards, such as:
       <p class="inline-block mt-3">
         <ol>
