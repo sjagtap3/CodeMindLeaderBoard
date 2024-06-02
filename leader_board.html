@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CodeMind Leaderboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
+<!-- favicon.svg -->
+<!-- <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👍</text></svg>"> -->
+<!-- <link rel="icon" href="/favicon.svg" /> -->
+<link rel="icon" href="https://images.emojiterra.com/google/noto-emoji/unicode-15/color/1024px/1f9d1-1f4bb.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
+<style>
+    #content {
+        width: 85%;
+      }
+    th, td {
+        text-align: center;
+      }
+    .citation-box {
+        border-left: 5px solid #333;
+        padding: 10px;
+        margin: 10px;
+        background-color: #f9f9f9;
+        font-style: italic;
+  }
+  #notes {
+    font-size: 1em;
+  }
+
+  #notes h3 {
+    margin-top: 1em;
+    font-size: 2em;
+    text-align: center;
+  }
+
+  #notes li {
+    font-size: 1.2em;
+    font-weight: 300;
+    margin: 1em;
+  }
+</style>
+</head>
+<body>
+
+    <div id="content" class="container-fluid d-flex flex-column align-items-center gap-3">
+        <div id="content" class="container-fluid d-flex flex-column align-items-center gap-3">
+            <h1 class="text-nowrap mt-5">🏆 CodeMind Leaderboard 🏆</h1>
+            <h3 class="fw-light text-nowrap"><small id="warning">A Framework to Challenge Large Language Models for Code Reasoning.<br></small>
+            </h3>
+            <div class="d-flex flex-row justify-content-center gap-3">
+              <a href="https://github.com/Intelligent-CAT-Lab/CodeMind"><img
+                  src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"
+                  alt="github" class="img-fluid"></a>
+              <a href="https://arxiv.org/abs/2402.09664"><img
+                src="https://img.shields.io/badge/arXiv-2402.09664-b31b1b.svg"
+                  alt="paper"
+                  class="img-fluid"></a>
+        </div>
+
+        <img src="CodeMind-Logo.jpg" alt="Girl in a jacket" width="20%">
+
+        <div class="container-fluid d-flex flex-column align-items-center">
+            <h3 class="fw-light justify-content-center">🙏 Please cite our paper if you are using this leaderboard in your work 🙏</h3>
+          </div>
+    
+          <code class="citation-box">
+            <strong><span style="color: rgb(0, 0, 130);">@article</span><span style="color: black;">{</span><span style="color: darkred;">liu2024codemind</span><span style="color: black;">,</span><br>
+            &nbsp;&nbsp;<span style="color: teal;">title</span><span style="color: black;"> = </span>{CodeMind: A Framework to Challenge Large Language Models for Code Reasoning}<span style="color: black;">,</span><br>
+            &nbsp;&nbsp;<span style="color: teal;">author</span><span style="color: black;"> = </span>{Liu, Changshu and Zhang, Shizhuo Dylan and Jabbarvand, Reyhaneh}<span style="color: black;">,</span><br>
+            &nbsp;&nbsp;<span style="color: teal;">booktitle</span><span style="color: black;"> = </span>{arXiv preprint arXiv:2402.09664}<span style="color: black;">,</span><br>
+            &nbsp;&nbsp;<span style="color: teal;">year<span style="color: black;"> = </span></span>{2024}<span style="color: black;">,</span><br>
+            <span style="color: black;">}</span></strong>
+          </code>
+        <div class="d-flex flex-row justify-content-center gap-3">
+            <label for="dataset">Dataset:</label>
+            <select id="dataset" onchange="filterData()">
+               
+                <option value="CodeNet">CodeNet</option>
+                <option value="MBPP">MBPP</option>
+                <option value="HumanEval">HumanEval</option>
+                <option value="Avatar">Avatar</option>
+                <option value="CruxEval">CruxEval</option>
+            </select>
+
+            <!-- Role Dropdown -->
+            <label for="task">Tasks:</label>
+            <select id="task" onchange="handleDropDown(); filterData()">
+                <option value="ier">IER</option>
+                <option value="der">DER</option>
+                <option value="sr">SR</option>
+            </select>
+
+            <label for="gtask" style="display: none;">Generation Task:</label>
+            <select id="gtask" style="display: none;"onchange="handleDropDown(); filterData()">
+                <!-- <option value="">Select a Code Generation Task</option> -->
+                <option value="synthesis">Code Synthesis</option>
+                <option value="translate">Code Translation</option>
+            </select>
+
+            <label for="source" style="display: none;">Source PL</label>
+            <select id="source" style="display: none;" onchange="filterData()">
+                <!-- <option value="">Select the source PL</option> -->
+                <option value="Java">Java</option>
+                <option value="Python">Python</option>
+            </select>
+            
+            <label for="target" style="display: none;">Target PL</label>
+            <select id="target" style="display: none;" onchange="filterData()">
+                <!-- <option value="">Select the target PL</option> -->
+                <option value="Java">Java</option>
+                <option value="Python">Python</option>
+            </select>
+  
+        </div>
+        <table id="data-table"
+        class="table table-responsive table-striped table-bordered flex-shrink-1 border border-dark border-3">
+            <thead>
+                <tr></tr> <!-- Headers are set dynamically -->
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <div id="notes">
+            <h3>🤗 More Leaderboards</h3>
+            <p style="font-size: large;">In addition to <strong>Code Mind</strong> leaderboards, it is recommended to comprehensively understand LLM coding ability through a
+            diverse set of benchmarks and leaderboards, such as:</p>
+            <p class="inline-block mt-3">
+              <ol>
+                <li><a href="https://codetlingua.github.io/leaderboard.html">Code Lingua</a></li> 
+                <li><a href="https://evalplus.github.io/leaderboard.html">EvalPlus</a></li>            
+                <li><a href="https://huggingface.co/spaces/bigcode/bigcode-models-leaderboard">Big Code Models Leaderboard</a></li>
+                <li><a href="https://huggingface.co/spaces/lmsys/chatbot-arena-leaderboard">Chatbot Arena Leaderboard</a></li>
+                <li><a href="https://github.com/amazon-science/cceval">CrossCodeEval</a></li>
+                <li><a href="https://fudanselab-classeval.github.io/">ClassEval</a></li>
+                <li><a href="https://crux-eval.github.io/leaderboard.html">CRUXEval</a></li>
+                <li><a href="https://evo-eval.github.io/">Evo-Eval</a></li>
+                <li><a href="https://github.com/01-ai/HumanEval.jl">HumanEval.jl</a></li>
+                <li><a href="https://infi-coder.github.io/inficoder-eval/">InfiCoder-Eval</a></li>
+                <li><a href="https://livecodebench.github.io/leaderboard.html">LiveCodeBench</a></li>
+                <li><a href="https://github.com/Leolty/repobench">RepoBench</a></li>
+                <li><a href="https://leaderboard.tabbyml.com/">TabbyML Leaderboard</a></li>
+              </ol>
+            </p>
+          </div>
+    </div>
+<script src="script.js"></script>
+</body>
+</html>
