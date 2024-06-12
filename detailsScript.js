@@ -1,19 +1,32 @@
 function filterDropdowns()
 {
-    fetchData().then(processData);
+    fetchData().then(data => {
+        let datasetData = data[0];
+        let ier = data[1];
+        processData(datasetData, ier);
+    });
 }
 
 // Fetch the data
+// function fetchData() {
+//     return fetch('task1/dataset.json')
+//         .then(response => response.json())
+//         .catch(err => console.error("Error:", err));
+// }
+
+// Fetch the data
 function fetchData() {
-    return fetch('task1/dataset.json')
-        .then(response => response.json())
-        .catch(err => console.error("Error:", err));
+    return Promise.all([
+        fetch('task1/dataset.json').then(response => response.json()),
+        fetch('task1/ier_data.json').then(response => response.json())
+    ]).catch(err => console.error("Error:", err));
 }
 
 // Process the data
-function processData(data) {
+function processData(data, ier) {
     // Parse the JSON data
     let parsedData = data;
+    let ierData = ier;
 
     // Get the datasets and problem ids
     let datasets = Object.keys(parsedData);
@@ -32,6 +45,15 @@ function processData(data) {
     document.getElementById('datasetDropdown').addEventListener('change', function() {
         console.log('Dataset selected:', this.value);
         populateProblemIdDropdown(problemIds, this.value);
+    });
+
+    document.getElementById('problemIdDropdown').addEventListener('change', function() {
+        let dataset = document.getElementById('datasetDropdown').value;
+        let problemId = this.value;
+    
+        if (dataset && problemId) {
+            populateDetailsTable(dataset, problemId, ierData);
+        }
     });
 }
 
@@ -88,4 +110,70 @@ function populateProblemIdDropdown(problemIds, selectedDataset) {
     // Show the problem id dropdown
     problemIdDropdown.style.display = 'inline';
     document.getElementById('problemIdDropdownLabel').style.display = 'inline';
+}
+
+function populateDetailsTable(dataset, problemId, ierData) {
+    // Fetch the data
+    fetchData().then(data => {
+        // Get the code and actual input for the selected problem id
+        let code = data[0][dataset][problemId]['code'];
+        let input = data[0][dataset][problemId]['code_input'];
+        let groundTruth = ierData["ChatGPT_3.5"][dataset][problemId]['ground_truth'];
+
+
+        let table = `<table style="border: 1px solid black; text-align: left;">
+            <tr>
+                <th style="border: 1px solid black; text-align: left; padding: 10px;">Code:</th>
+                <td style="border: 1px solid black; text-align: left; padding: 10px;"><pre>${code}</pre></td>
+            </tr>
+            <tr>
+                <th style="border: 1px solid black; text-align: left; padding: 10px;">Input:</th>
+                <td style="border: 1px solid black; text-align: left; padding: 10px;"><pre>${input}</pre></td>
+            </tr>
+            <tr>
+                <th style="border: 1px solid black; text-align: left; padding: 10px;">Expected Output:</th>
+                <td style="border: 1px solid black; text-align: left; padding: 10px;"><pre>${groundTruth}</pre></td>
+            </tr>
+        </table>`;
+
+        // Insert the table into the div
+        document.getElementById('detailsTable').innerHTML = table;
+        populateModelResults(dataset, problemId);
+    });
+}
+
+function populateModelResults(dataset, problemId) {
+    // Fetch the data
+    fetchData().then(data => {
+        // Get the problem details for the selected problem id
+        let models = Object.keys(data[1]);
+
+        // Initialize the HTML string with table headers
+        let html = '';
+
+        // Add a textbox and a table for each model
+        models.forEach(model => {
+            let details = data[1][model][dataset][problemId];
+            let color = details['label'] === 1 ? 'green' : 'red';
+            html += `
+            <label style="background-color: ${color}; width: 100%; display: block; margin-bottom: 10px; color:white;">${model}</label>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th style="border: 1px solid black; text-align: left; padding: 10px;">Reasoning</th>
+                            <td style="border: 1px solid black; text-align: left; padding: 10px;">${details['reasoning']}</td>
+                        </tr>
+                        <tr>
+                            <th style="border: 1px solid black; text-align: left; padding: 10px;">Predicted Output</th>
+                            <td style="border: 1px solid black; text-align: left; padding: 10px;">${details['output']}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br>
+            `;
+        });
+
+        // Insert the HTML into the div
+        document.getElementById('modelResults').innerHTML = html;
+    }).catch(err => console.error("Error:", err));
 }
