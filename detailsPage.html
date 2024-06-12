@@ -12,7 +12,9 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
 <style>
     #content {
-        width: 85%;
+        width: 100%;
+        max-width: 1200px; /* You can adjust this value according to your needs */
+        margin: 0 auto; /* This will center the div if the viewport is wider than max-width */
       }
     th, td {
         text-align: center;
@@ -39,6 +41,20 @@
     font-weight: 300;
     margin: 1em;
   }
+
+  #detailsTable {
+    width: 100%;
+    height: auto;
+    text-align: center;
+    overflow: auto; /* This will add a scrollbar if the content is larger than the div */
+}
+
+#modelResults {
+    width: 100%; /* This will make the div take up the full width of its parent */
+    overflow: auto; /* This will add a scrollbar if the content is larger than the div */
+    text-align: center;
+    overflow: auto;
+}
 </style>
 </head>
 <body>
@@ -96,6 +112,7 @@
 
 
         <div id="modelResults"></div>
+        <!-- Table loaded dynamically -->
 
     </div>
     <script src="detailsScript.js"></script>

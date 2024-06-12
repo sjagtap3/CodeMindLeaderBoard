@@ -112,6 +112,7 @@ function populateProblemIdDropdown(problemIds, selectedDataset) {
     document.getElementById('problemIdDropdownLabel').style.display = 'inline';
 }
 
+
 function populateDetailsTable(dataset, problemId, ierData) {
     // Fetch the data
     fetchData().then(data => {
@@ -121,20 +122,23 @@ function populateDetailsTable(dataset, problemId, ierData) {
         let groundTruth = ierData["ChatGPT_3.5"][dataset][problemId]['ground_truth'];
 
 
-        let table = `<table style="border: 1px solid black; text-align: left;">
-            <tr>
-                <th style="border: 1px solid black; text-align: left; padding: 10px;">Code:</th>
-                <td style="border: 1px solid black; text-align: left; padding: 10px;"><pre>${code}</pre></td>
-            </tr>
-            <tr>
-                <th style="border: 1px solid black; text-align: left; padding: 10px;">Input:</th>
-                <td style="border: 1px solid black; text-align: left; padding: 10px;"><pre>${input}</pre></td>
-            </tr>
-            <tr>
-                <th style="border: 1px solid black; text-align: left; padding: 10px;">Expected Output:</th>
-                <td style="border: 1px solid black; text-align: left; padding: 10px;"><pre>${groundTruth}</pre></td>
-            </tr>
-        </table>`;
+        let table = `
+        <div style="justify-content: center;">
+            <table style="border: 1px solid black; text-align: center;">
+                <tr>
+                    <th style="border: 1px solid black; text-align: left; padding: 10px;">Code:</th>
+                    <td style="border: 1px solid black; text-align: left; padding: 10px;"><pre>${code}</pre></td>
+                </tr>
+                <tr>
+                    <th style="border: 1px solid black; text-align: left; padding: 10px;">Input:</th>
+                    <td style="border: 1px solid black; text-align: left; padding: 10px;"><pre>${input}</pre></td>
+                </tr>
+                <tr>
+                    <th style="border: 1px solid black; text-align: left; padding: 10px;">Expected Output:</th>
+                    <td style="border: 1px solid black; text-align: left; padding: 10px;"><pre>${groundTruth}</pre></td>
+                </tr>
+            </table>
+        </div>`;
 
         // Insert the table into the div
         document.getElementById('detailsTable').innerHTML = table;
@@ -142,9 +146,12 @@ function populateDetailsTable(dataset, problemId, ierData) {
     });
 }
 
+
 function populateModelResults(dataset, problemId) {
     // Fetch the data
     fetchData().then(data => {
+        document.getElementById('modelResults').innerHTML = '';
+
         // Get the problem details for the selected problem id
         let models = Object.keys(data[1]);
 
@@ -153,19 +160,26 @@ function populateModelResults(dataset, problemId) {
 
         // Add a textbox and a table for each model
         models.forEach(model => {
+            if (model == null || model=='') {
+                return;
+            }
             let details = data[1][model][dataset][problemId];
             let color = details['label'] === 1 ? 'green' : 'red';
+
+            let reasoning = details['reasoning'] || 'Not Available';
+            let output = details['output'] || 'Not Available';
+
             html += `
             <label style="background-color: ${color}; width: 100%; display: block; margin-bottom: 10px; color:white;">${model}</label>
                 <table>
                     <tbody>
                         <tr>
                             <th style="border: 1px solid black; text-align: left; padding: 10px;">Reasoning</th>
-                            <td style="border: 1px solid black; text-align: left; padding: 10px;">${details['reasoning']}</td>
+                            <td style="border: 1px solid black; text-align: left; padding: 10px;">${reasoning}</td>
                         </tr>
                         <tr>
                             <th style="border: 1px solid black; text-align: left; padding: 10px;">Predicted Output</th>
-                            <td style="border: 1px solid black; text-align: left; padding: 10px;">${details['output']}</td>
+                            <td style="border: 1px solid black; text-align: left; padding: 10px;">${output}</td>
                         </tr>
                     </tbody>
                 </table>
