@@ -13,7 +13,19 @@ function filterDropdowns() {
 
     document.getElementById('datasetDropdown').addEventListener('change', function() {
         console.log('Dataset selected:', this.value);
-        populateProblemIdDropdown(this.value);
+        showGenerationTaskDropdown();
+        document.getElementById('generationTask').value = '';
+    });
+
+    document.getElementById('generationtask').addEventListener('change', function() {
+        console.log('Generation task selected:', this.value);
+        
+        let dataset = document.getElementById('datasetDropdown').value;
+        if(this.value == 'code synthesis') {
+            populateProblemIdDropdown(dataset);
+        }
+        else {
+        }
     });
 
     document.getElementById('problemIdDropdown').addEventListener('change', function() {
@@ -24,6 +36,13 @@ function filterDropdowns() {
             populateDetailsTable(dataset, problemId);
         }
     });
+}
+
+function showGenerationTaskDropdown() {
+    let tasks = ['code synthesis', 'code translation'];
+    populateDropdown('generationtask', tasks, 'Select a task');
+
+    document.getElementById('generationtask').style.display = 'inline';
 }
 
 // Fetch the data
